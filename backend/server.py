@@ -328,6 +328,30 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+@app.on_event("startup")
+async def startup_event():
+    """Load model on startup"""
+    logger.info("Starting AASD 4014 Object Detection API...")
+    success = load_model()
+    if success:
+        logger.info("✅ Model loaded successfully")
+    else:
+        logger.error("❌ Failed to load model")
+    
+    # Test database connection
+    try:
+        await db.command("ping")
+        logger.info("✅ Database connected successfully")
+    except Exception as e:
+        logger.error(f"❌ Database connection failed: {str(e)}")
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
+    """Cleanup on shutdown"""
+    logger.info("Shutting down API...")
     client.close()
+    logger.info("✅ Database connection closed")
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8001)
