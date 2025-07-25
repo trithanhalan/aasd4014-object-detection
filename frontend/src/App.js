@@ -515,14 +515,65 @@ const Home = () => {
   );
 };
 
+// Navigation Component
+const Navigation = () => {
+  return (
+    <nav className="bg-white shadow-sm border-b">
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="flex justify-between items-center h-16">
+          <Link to="/" className="flex items-center space-x-2">
+            <img 
+              src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4"
+              alt="Logo"
+              className="w-8 h-8 rounded"
+            />
+            <span className="font-bold text-xl text-gray-900">Object Detection</span>
+          </Link>
+          
+          <div className="flex space-x-6">
+            <Link
+              to="/"
+              className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+            >
+              Home
+            </Link>
+            <Link
+              to="/detect"
+              className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+            >
+              Detection
+            </Link>
+            <Link
+              to="/history"
+              className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+            >
+              History
+            </Link>
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
+};
+
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
+          <Route path="/" element={<Home />} />
+          <Route path="/detect" element={
+            <>
+              <Navigation />
+              <DetectionPage />
+            </>
+          } />
+          <Route path="/history" element={
+            <>
+              <Navigation />
+              <HistoryPage />
+            </>
+          } />
         </Routes>
       </BrowserRouter>
     </div>
