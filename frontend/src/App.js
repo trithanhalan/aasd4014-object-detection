@@ -402,7 +402,7 @@ const Home = () => {
         <div className="text-center mb-12">
           <img 
             src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4"
-            alt="Emergent Logo"
+            alt="ObjectDetectApp Logo"
             className="w-24 h-24 mx-auto mb-6 rounded-full"
           />
           <h1 className="text-5xl font-bold text-white mb-4">
