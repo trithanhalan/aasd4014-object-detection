@@ -252,10 +252,19 @@ async def detect_objects(file: UploadFile = File(...)):
 async def get_detections(limit: int = 50):
     """Get recent detection records"""
     try:
-        detections = await db.detections.find(
+        # Convert MongoDB documents to JSON-serializable format
+        detections_cursor = db.detections.find(
             {}, 
             {"image_data": 0}  # Exclude base64 image data for performance
-        ).sort("timestamp", -1).limit(limit).to_list(limit)
+        ).sort("timestamp", -1).limit(limit)
+        
+        detections = []
+        async for detection in detections_cursor:
+            # Convert ObjectId to string and handle datetime
+            detection["_id"] = str(detection["_id"])
+            if "timestamp" in detection:
+                detection["timestamp"] = detection["timestamp"].isoformat() if hasattr(detection["timestamp"], 'isoformat') else str(detection["timestamp"])
+            detections.append(detection)
         
         return {
             "success": True,
@@ -274,7 +283,14 @@ async def get_detection_detail(detection_id: str):
         if not detection:
             raise HTTPException(status_code=404, detail="Detection not found")
         
+        # Convert ObjectId to string and handle datetime
+        detection["_id"] = str(detection["_id"])
+        if "timestamp" in detection:
+            detection["timestamp"] = detection["timestamp"].isoformat() if hasattr(detection["timestamp"], 'isoformat') else str(detection["timestamp"])
+        
         return detection
+    except HTTPException:
+        raise
     except Exception as e:
         logging.error(f"Error fetching detection {detection_id}: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
