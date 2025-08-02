@@ -196,8 +196,8 @@ python src/train_fasterrcnn.py --full-training \
 ### Model Evaluation
 ```bash
 # Comprehensive evaluation
-python src/evaluate.py \
-    --weights models/yolov5s_person_dog.pt \
+python src/evaluate_fasterrcnn.py \
+    --weights models/fasterrcnn_checkpoint.pth \
     --data data/voc_person_dog.yaml \
     --save-json \
     --plots
