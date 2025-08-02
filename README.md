@@ -1,5 +1,5 @@
 # AASD 4014 Final Project - Object Detection
-## Group 6: Person vs Dog Detection using YOLOv5
+## Group 6: Person vs Dog Detection using Faster R-CNN
 
 ### Team Members
 - **Tri Thanh Alan Inder Kumar** (101413004) - Project Manager
@@ -14,7 +14,7 @@
 ---
 
 ## 🎯 Project Overview
-This project implements a comprehensive two-class object detection system to identify **persons** and **dogs** in images using **YOLOv5** with transfer learning on the **Pascal VOC 2007** dataset. The solution includes:
+This project implements a comprehensive two-class object detection system to identify **persons** and **dogs** in images using **Faster R-CNN with ResNet-50 FPN backbone** and transfer learning on the **Pascal VOC 2007** dataset. The solution includes:
 
 - 🧠 **Complete ML Pipeline**: Data preparation, training, evaluation, and hyperparameter tuning
 - 🌐 **Full-Stack Web Application**: React frontend + FastAPI backend
@@ -23,12 +23,18 @@ This project implements a comprehensive two-class object detection system to ide
 - 🚀 **Production Ready**: Containerized deployment with monitoring
 
 ### Key Features
-- ✅ **High Accuracy**: mAP@0.5 = 0.847 (>75% target)
-- ✅ **Real-time Processing**: <2 seconds inference time
+- ✅ **High Accuracy**: Two-stage detection with precise localization
+- ✅ **Transfer Learning**: ResNet-50 FPN backbone pre-trained on COCO
 - ✅ **User-friendly Interface**: Drag-and-drop image upload
 - ✅ **Interactive Visualization**: Bounding boxes with confidence scores
 - ✅ **Detection History**: Persistent storage and analytics
 - ✅ **Responsive Design**: Works on desktop and mobile
+
+### Model Architecture
+- **Framework**: PyTorch + Torchvision
+- **Model**: Faster R-CNN with ResNet-50 FPN backbone
+- **Classes**: Background (0), Person (1), Dog (2)
+- **Training Strategy**: Two-stage transfer learning (freeze → unfreeze)
 
 ---
 
