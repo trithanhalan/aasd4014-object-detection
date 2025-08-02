@@ -41,16 +41,14 @@ def load_model():
     """Load Faster R-CNN model at startup"""
     global MODEL
     try:
-        # Create Faster R-CNN model with ResNet-50 FPN backbone
-        # num_classes = 3 (background + person + dog)
-        MODEL = fasterrcnn_resnet50_fpn(pretrained=True, num_classes=3)
-        
         if MODEL_PATH.exists():
-            # Load custom trained weights
+            # Load custom trained model with 3 classes
+            MODEL = fasterrcnn_resnet50_fpn(pretrained=False, num_classes=3)
             MODEL.load_state_dict(torch.load(str(MODEL_PATH), map_location=DEVICE))
             logging.info(f"Loaded custom Faster R-CNN model from {MODEL_PATH}")
         else:
-            # Use pretrained COCO weights for demo (includes person class)
+            # Use pretrained COCO model (91 classes) for demo
+            MODEL = fasterrcnn_resnet50_fpn(pretrained=True)
             logging.warning("Using pretrained COCO Faster R-CNN model (demo mode)")
         
         MODEL.to(DEVICE)
