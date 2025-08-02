@@ -180,11 +180,11 @@ processor.generate_dataset_stats()
 
 ### Model Training
 ```bash
-# Quick demo setup (uses pre-trained weights)
-python src/train.py --demo-setup
+# Quick demo setup (uses pretrained COCO weights)
+python src/train_fasterrcnn.py --demo-setup
 
-# Full training pipeline (1-2 hours)
-python src/train.py --full-training \
+# Full training pipeline (2-4 hours with GPU)
+python src/train_fasterrcnn.py --full-training \
     --data data/voc_person_dog.yaml \
     --epochs 50
 
