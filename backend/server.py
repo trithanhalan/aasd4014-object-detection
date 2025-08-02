@@ -16,6 +16,10 @@ import base64
 from io import BytesIO
 from PIL import Image
 import sys
+import torch
+from torchvision.models.detection import fasterrcnn_resnet50_fpn
+from torchvision.transforms import functional as F
+import time
 
 # Add src directory to path for imports
 sys.path.append(str(Path(__file__).parent.parent / "src"))
@@ -28,27 +32,33 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
-# Initialize YOLO model at startup
+# Initialize Faster R-CNN model at startup
 MODEL = None
-MODEL_PATH = Path(__file__).parent.parent / "models" / "yolov5s_person_dog.pt"
+MODEL_PATH = Path(__file__).parent.parent / "models" / "fasterrcnn_checkpoint.pth"
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def load_model():
-    """Load YOLO model at startup"""
+    """Load Faster R-CNN model at startup"""
     global MODEL
     try:
-        from ultralytics import YOLO
+        # Create Faster R-CNN model with ResNet-50 FPN backbone
+        # num_classes = 3 (background + person + dog)
+        MODEL = fasterrcnn_resnet50_fpn(pretrained=True, num_classes=3)
         
         if MODEL_PATH.exists():
-            MODEL = YOLO(str(MODEL_PATH))
-            logging.info(f"Model loaded successfully from {MODEL_PATH}")
+            # Load custom trained weights
+            MODEL.load_state_dict(torch.load(str(MODEL_PATH), map_location=DEVICE))
+            logging.info(f"Loaded custom Faster R-CNN model from {MODEL_PATH}")
         else:
-            # Fallback to pretrained YOLOv5s for demo
-            MODEL = YOLO('yolov5s.pt')
-            logging.warning("Using pretrained YOLOv5s model (demo mode)")
+            # Use pretrained COCO weights for demo (includes person class)
+            logging.warning("Using pretrained COCO Faster R-CNN model (demo mode)")
         
+        MODEL.to(DEVICE)
+        MODEL.eval()
+        logging.info(f"Faster R-CNN model loaded successfully on {DEVICE}")
         return True
     except Exception as e:
-        logging.error(f"Failed to load model: {str(e)}")
+        logging.error(f"Failed to load Faster R-CNN model: {str(e)}")
         return False
 
 # Create the main app without a prefix
