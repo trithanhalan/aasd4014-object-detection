@@ -19,9 +19,9 @@
 
 ## Abstract
 
-This project implements a comprehensive object detection system for identifying persons and dogs in images using YOLOv5 with transfer learning on the Pascal VOC 2007 dataset. The solution includes a complete machine learning pipeline, full-stack web application, and production-ready deployment. The system achieves strong performance with real-time inference capabilities and user-friendly visualization of detection results.
+This project implements a comprehensive object detection system for identifying persons and dogs in images using **Faster R-CNN with ResNet-50 FPN backbone** and transfer learning on the Pascal VOC 2007 dataset. The solution includes a complete machine learning pipeline, full-stack web application, and production-ready deployment. The system achieves strong performance with real-time inference capabilities and user-friendly visualization of detection results.
 
-**Keywords**: Object Detection, YOLOv5, Transfer Learning, Pascal VOC, Full-Stack Development, Computer Vision
+**Keywords**: Object Detection, Faster R-CNN, Transfer Learning, Pascal VOC, Full-Stack Development, Computer Vision
 
 ---
 
