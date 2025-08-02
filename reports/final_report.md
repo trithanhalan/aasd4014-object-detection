@@ -141,27 +141,23 @@ Comprehensive augmentation strategy to improve generalization:
 
 **Geometric Transformations**:
 - Horizontal flip: 50% probability
-- Vertical flip: 50% probability
-- Rotation: ±10 degrees
-- Translation: ±10% of image size
-- Scale variation: 0.5-1.5x
+- Rotation: ±5 degrees (conservative for two-stage detectors)
+- Translation: ±5% of image size
+- Scale variation: 0.8-1.2x
 
 **Photometric Augmentations**:
-- HSV color space adjustments:
-  - Hue: ±1.5%
-  - Saturation: ±70%
-  - Value: ±40%
+- Color jittering: brightness, contrast, saturation adjustments
+- Normalization: ImageNet statistics for ResNet backbone
 
-**Advanced Techniques**:
-- Mosaic augmentation: 100% probability
-- Mixup: 10% probability
-- Copy-paste: 10% probability
+**Training Strategy**:
+- Random crop and resize to 512×512
+- Multi-scale training for robustness
 
 ### 4.3 Training Infrastructure
 - **Hardware**: CPU-based training (GPU-optimized configuration available)
-- **Framework**: Ultralytics YOLOv5 (PyTorch backend)
+- **Framework**: PyTorch + Torchvision
 - **Monitoring**: Real-time loss tracking and validation metrics
-- **Checkpointing**: Best model selection based on mAP@0.5
+- **Checkpointing**: Best model selection based on validation loss
 
 ---
 
