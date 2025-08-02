@@ -166,56 +166,54 @@ async def root():
 
 @api_router.post("/detect", response_model=DetectionResponse)
 async def detect_objects(file: UploadFile = File(...)):
-    """Object detection endpoint"""
+    """Object detection endpoint using Faster R-CNN"""
     start_time = datetime.utcnow()
     
     if MODEL is None:
-        raise HTTPException(status_code=500, detail="Model not loaded")
+        raise HTTPException(status_code=500, detail="Faster R-CNN model not loaded")
     
     try:
         # Read and decode image
         image_data = await file.read()
         
-        # Convert to numpy array
-        nparr = np.frombuffer(image_data, np.uint8)
-        image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        # Convert to PIL Image
+        image = Image.open(BytesIO(image_data)).convert("RGB")
         
-        if image is None:
-            raise HTTPException(status_code=400, detail="Invalid image format")
+        # Convert to tensor for model input
+        tensor = F.to_tensor(image).to(DEVICE)
         
         # Run inference
-        results = MODEL(image)
+        start_inference = time.time()
+        with torch.no_grad():
+            predictions = MODEL([tensor])[0]
+        inference_time = time.time() - start_inference
         
-        # Process results
-        predictions = []
-        if results[0].boxes is not None:
-            boxes = results[0].boxes
+        # Process predictions
+        results = []
+        if len(predictions["boxes"]) > 0:
+            # Filter predictions by confidence threshold
+            confidence_threshold = 0.5
+            mask = predictions["scores"] > confidence_threshold
             
-            for i in range(len(boxes)):
-                # Get box coordinates (xyxy format)
-                xyxy = boxes.xyxy[i].cpu().numpy()
-                conf = float(boxes.conf[i].cpu().numpy())
-                cls = int(boxes.cls[i].cpu().numpy())
-                
-                # Map class ID to name (adjust based on your model)
-                class_names = ['person', 'dog'] if cls < 2 else MODEL.names
-                if cls < len(class_names):
-                    class_name = class_names[cls]
-                else:
-                    # For general YOLO models, use original class names
-                    if cls == 0:  # person in COCO
-                        class_name = 'person'
-                    elif cls == 16:  # dog in COCO  
-                        class_name = 'dog'
-                    else:
-                        continue  # Skip other classes
-                
-                # Only include person and dog detections
-                if class_name in ['person', 'dog']:
-                    predictions.append({
-                        "class": class_name,
-                        "score": round(conf, 3),
-                        "bbox": [round(float(coord), 1) for coord in xyxy]
+            boxes = predictions["boxes"][mask].cpu().tolist()
+            scores = predictions["scores"][mask].cpu().tolist()
+            labels = predictions["labels"][mask].cpu().tolist()
+            
+            # Map class IDs to names
+            # For COCO model: 1=person, but we need to handle custom trained model
+            if MODEL_PATH.exists():
+                # Custom model: 1=person, 2=dog
+                class_map = {1: "person", 2: "dog"}
+            else:
+                # COCO pretrained: 1=person, 18=dog
+                class_map = {1: "person", 18: "dog"}
+            
+            for box, score, label in zip(boxes, scores, labels):
+                if label in class_map:
+                    results.append({
+                        "class": class_map[label],
+                        "score": round(score, 3),
+                        "bbox": [round(coord, 1) for coord in box]  # [x1, y1, x2, y2]
                     })
         
         # Calculate processing time
@@ -226,18 +224,19 @@ async def detect_objects(file: UploadFile = File(...)):
         image_id = str(uuid.uuid4())
         
         # Create annotated image for storage
-        annotated_image = draw_detections(image, predictions)
+        image_cv = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+        annotated_image = draw_detections(image_cv, results)
         image_base64 = image_to_base64(annotated_image)
         
         # Count detections by class
-        person_count = sum(1 for p in predictions if p['class'] == 'person')
-        dog_count = sum(1 for p in predictions if p['class'] == 'dog')
+        person_count = sum(1 for p in results if p['class'] == 'person')
+        dog_count = sum(1 for p in results if p['class'] == 'dog')
         
         # Store detection record in database
         detection_record = DetectionRecord(
             image_id=image_id,
             timestamp=end_time,
-            predictions=predictions,
+            predictions=results,
             person_count=person_count,
             dog_count=dog_count,
             image_data=image_base64
@@ -248,14 +247,14 @@ async def detect_objects(file: UploadFile = File(...)):
         # Return response
         return DetectionResponse(
             success=True,
-            predictions=[DetectionResult(**pred) for pred in predictions],
+            predictions=[DetectionResult(**pred) for pred in results],
             image_id=image_id,
             timestamp=end_time,
             processing_time_ms=round(processing_time, 2)
         )
         
     except Exception as e:
-        logging.error(f"Detection error: {str(e)}")
+        logging.error(f"Faster R-CNN detection error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Detection failed: {str(e)}")
 
 @api_router.get("/detections")
