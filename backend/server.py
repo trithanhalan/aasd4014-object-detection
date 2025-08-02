@@ -158,9 +158,10 @@ def draw_detections(image: np.ndarray, predictions: List[Dict]) -> np.ndarray:
 @api_router.get("/")
 async def root():
     return {
-        "message": "AASD 4014 Object Detection API", 
+        "message": "AASD 4014 Object Detection API - Faster R-CNN", 
         "group": "Group 6",
         "version": "1.0.0",
+        "model": "Faster R-CNN with ResNet-50 FPN",
         "endpoints": ["/detect", "/status", "/detections"]
     }
 
