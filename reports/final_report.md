@@ -95,22 +95,23 @@ Validation Set:
 ## 3. Model Architecture & Transfer Learning Strategy
 
 ### 3.1 Architecture Selection
-**Base Model**: YOLOv5-Small (YOLOv5s)
-- **Backbone**: CSPDarknet53
-- **Neck**: PANet (Path Aggregation Network)
-- **Head**: YOLO detection head
-- **Parameters**: 7.2M parameters
-- **Pre-training**: MS COCO dataset (80 classes)
+**Base Model**: Faster R-CNN with ResNet-50 FPN
+- **Backbone**: ResNet-50 (feature extraction)
+- **Neck**: Feature Pyramid Network (FPN)
+- **Head**: Two-stage detection (RPN + ROI Head)
+- **Parameters**: ~41.8M parameters
+- **Pre-training**: MS COCO dataset (91 classes)
 
 ### 3.2 Transfer Learning Rationale
 1. **Feature Reuse**: COCO dataset includes person and dog classes
-2. **Computational Efficiency**: Faster convergence compared to training from scratch
-3. **Small Dataset Handling**: Transfer learning effective with limited target data
-4. **Proven Performance**: YOLOv5 achieves state-of-the-art results on detection benchmarks
+2. **Two-Stage Architecture**: Better precision for small object detection
+3. **Computational Efficiency**: Transfer learning faster than training from scratch
+4. **Small Dataset Handling**: Transfer learning effective with limited target data
+5. **Proven Performance**: Faster R-CNN achieves high accuracy on detection benchmarks
 
 ### 3.3 Model Adaptation
-- **Class Modification**: Retrain final layer for 2 classes (person, dog)
-- **Anchor Optimization**: Maintain default anchors suitable for both classes
+- **Class Modification**: Retrain final layer for 3 classes (background, person, dog)
+- **ROI Head**: Adapt classifier and box regressor for target classes
 - **Input Resolution**: 512×512 pixels (balance between accuracy and speed)
 
 ---
