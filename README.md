@@ -43,7 +43,7 @@ This project implements a comprehensive two-class object detection system to ide
 ```
 ├── 📁 src/                     # Core ML pipeline
 │   ├── 📄 datasets.py          # Pascal VOC data preparation
-│   ├── 📄 train.py             # YOLOv5 training pipeline
+│   ├── 📄 train.py             # Training pipeline
 │   ├── 📄 evaluate.py          # Model evaluation & metrics
 │   └── 📄 utils.py             # Utility functions
 ├── 📁 notebooks/               # Jupyter analysis notebooks
