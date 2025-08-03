@@ -463,7 +463,7 @@ This project is developed for **AASD 4014 - Advanced Software Systems Developmen
 
 Special thanks to:
 - **AASD 4014 Course Staff** for project guidance
-- **Ultralytics Team** for YOLOv5 framework
+- **Ultralytics Team** for framework
 - **Pascal VOC Challenge** for dataset provision
 - **Open Source Community** for various tools and libraries
 
