@@ -469,7 +469,7 @@ Special thanks to:
 
 ---
 
-**Project Completion**: January 29, 2024  
+**Project Completion**: July, 2025
 **Final Delivery**: Group_6_AASD4014_FinalProject.zip  
 **Live Demo**: Available at configured frontend URL  
 
